@@ -23,10 +23,18 @@ public class MazeMaker {
         //    This will be the starting point. Then select a random cell along
         //    the opposite wall and remove its exterior wall. This will be the
         //    finish line.
+        int rand = (int)(Math.random()*rows);
+        maze.getCell(rand, 0).setWestWall(false);
+        rand = (int)(Math.random()*rows);
+        maze.getCell(rand, cols-1).setEastWall(false);
         
-        // 2. select a random cell in the maze to start 
+        // 2. select a random cell in the maze to start
+        rand = (int)(Math.random()*rows);
+        int rand2 = (int)(Math.random()*cols);
+        Cell cell = maze.getCell(rand, rand2);
         
         // 3. call the selectNextPath method with the randomly selected cell
+        selectNextPath(cell);
 
         return maze;
     }
@@ -34,10 +42,42 @@ public class MazeMaker {
     // 4. Complete the selectNextPathMethod
     private static void selectNextPath(Cell currentCell) {
         // A. SET currentCell as visited
-
+    	currentCell.setBeenVisited(true);
         // B. check for unvisited neighbors using the cell
+    	ArrayList<Cell> list = getUnvisitedNeighbors(currentCell);
 
         // C. if has unvisited neighbors,
+    	if(!list.isEmpty()) {
+    		int rand = (int)(Math.random()*list.size());
+    		Cell c = list.get(rand);
+    		uncheckedCells.push(c);
+    		if(currentCell.getCol()==c.getCol()-1) {
+    			currentCell.setEastWall(false);
+    			c.setWestWall(false);
+    		}
+    		if(currentCell.getCol()==c.getCol()+1) {
+    			currentCell.setWestWall(false);
+    			c.setEastWall(false);
+    		}
+    		if(currentCell.getRow()==c.getRow()-1) {
+    			currentCell.setSouthWall(false);
+    			c.setNorthWall(false);
+    		}
+    		if(currentCell.getRow()==c.getRow()+1) {
+    			currentCell.setNorthWall(false);
+    			c.setSouthWall(false);
+    		}
+    		
+    		currentCell = c;
+    		currentCell.setBeenVisited(true);
+    		selectNextPath(c);
+    		
+    	}else {
+    		if(!uncheckedCells.isEmpty()) {
+    			currentCell = uncheckedCells.pop();
+    			selectNextPath(currentCell);
+    		}
+    	}
 
         // C1. select one at random.
 
@@ -49,7 +89,7 @@ public class MazeMaker {
 
         // C5. call the selectNextPath method with the current cell
 
-
+    	
         // D. if all neighbors are visited
 
         // D1. if the stack is not empty
